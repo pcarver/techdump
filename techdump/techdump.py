@@ -7,7 +7,7 @@ from subprocess import call
 from time import strftime
 
 config = configparser.ConfigParser(allow_no_value=True)
-config.read('commands.ini')
+config.read('config.ini')
 
 
 def run(cmd, outdir):
@@ -19,16 +19,6 @@ def run(cmd, outdir):
     return call(shellcommand, shell=True)
 
 
-def buildcommand(cmd):
-    fullcommand = cmd
-    if cmd in config.sections():
-        if 'sudo' in config[cmd]:
-            fullcommand = 'sudo ' + cmd
-        if 'args' in config[cmd]:
-            fullcommand += config[cmd]['args']
-    return fullcommand
-
-
 def main():
     resultsdir = strftime('%Y-%m-%d_%H:%M_UTC%z')
     mkdir(resultsdir)
@@ -36,7 +26,7 @@ def main():
     for cmd in config['Commands']:
         cmdsummary = {'command': cmd}
         cmdsummary['starttime'] = strftime('%Y-%m-%d_%H:%M:%S_UTC%z')
-        result = run(buildcommand(cmd), resultsdir)
+        result = run(cmd, resultsdir)
         cmdsummary['endtime'] = strftime('%Y-%m-%d_%H:%M:%S_UTC%z')
         cmdsummary['resultcode'] = result
         if result > 0:
